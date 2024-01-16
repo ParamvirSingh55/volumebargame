@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 500px;
+      height: 200px;
+      background-color: #000;
+      border-color: aqua;
+      padding: 2px;
+    }
+
+    .volume-bar-container {
+      position: relative;
+      width: 75px;
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .volume-bar {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      transition: height 0.1s ease-in-out; /* Faster transition */
+    }
+
+    #button-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #90c6c9;
+      color: #000000;
+      border: 1px solid black;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+  <title>Multiple Vertical Volume Bars</title>
+</head>
+<body>
+  <div id="container">
+    <div class="volume-bar-container">
+      <div class="volume-bar" id="volumeBar1"></div>
+    </div>
+
+    <div class="volume-bar-container">
+      <div class="volume-bar" id="volumeBar2"></div>
+    </div>
+
+    <div class="volume-bar-container">
+      <div class="volume-bar" id="volumeBar3"></div>
+    </div>
+
+    <div class="volume-bar-container">
+      <div class="volume-bar" id="volumeBar4"></div>
+    </div>
+
+    <div class="volume-bar-container">
+      <div class="volume-bar" id="volumeBar5"></div>
+    </div>
+  </div>
+  
+  <div id="button-container">
+    <button onclick="startChanging()">Start</button>
+    <button onclick="resetVolumes()">Reset</button>
+    <button onclick="stopChanging()">Stop</button>
+    
+  </div>
+
+  <script>
+    let intervalId;
+    const volumeBars = Array.from({ length: 5 }, (_, index) => ({
+      id: `volumeBar${index + 1}`,
+      height: 0,
+      direction: 1,  // 1 for increasing, -1 for decreasing
+      color: getRandomColor()
+    }));
+
+    function startChanging() {
+      intervalId = setInterval(() => {
+        volumeBars.forEach(bar => {
+          const changeDirection = Math.random() > 0.5 ? 1 : -1;
+          bar.direction = changeDirection;
+          
+          if (bar.height >= 100) {
+            bar.direction = -1;  // Start decreasing if height reaches 100
+          } else if (bar.height <= 0) {
+            bar.direction = 1;  // Start increasing if height reaches 0
+          }
+
+          bar.height += bar.direction * Math.random() * 20;  // Faster change
+          updateVolume(bar.id);
+        });
+      }, 25); // Faster interval
+    }
+
+    function stopChanging() {
+      clearInterval(intervalId);
+    }
+
+    function resetVolumes() {
+      stopChanging();
+      volumeBars.forEach(bar => {
+        bar.height = 0;
+        updateVolume(bar.id);
+      });
+    }
+
+    function updateVolume(barId) {
+      const volumeBar = document.getElementById(barId);
+      volumeBar.style.height = volumeBars.find(bar => bar.id === barId).height + '%';
+      volumeBar.style.backgroundColor = volumeBars.find(bar => bar.id === barId).color;
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  </script>
+</body>
+</html>
